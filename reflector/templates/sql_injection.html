@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+{% autoescape false %}
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>XSS Demo</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+
+  <body>
+    <header>
+      <h1>Search Results</h1>
+    </header>
+    {% if not search_query %}
+    <h3>Showing all comments:</h3>
+    {% else %} {% endif %} {% for det in results %}
+    <div>
+      <p>{{ det }}</p>
+    </div>
+    {% endfor %}
+  </body>
+</html>
+{% endautoescape %}
