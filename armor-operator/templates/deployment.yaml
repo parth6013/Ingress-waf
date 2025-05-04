@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: armor-{{ .ServiceName }}
+  namespace: armor
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: armor-{{ .ServiceName }}
+  template:
+    metadata:
+      labels:
+        app: armor-{{ .ServiceName }}
+    spec:
+      containers:
+      - name: armor
+        image: docker.io/parth6013/armor-project:1.3.0
+        ports:
+        - containerPort: 3000
+        volumeMounts:
+        - name: config-volume
+          mountPath: /app/config.json
+          subPath: config.json
+      volumes:
+      - name: config-volume
+        configMap:
+          name: armor-config-{{ .ServiceName }}

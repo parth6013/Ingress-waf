@@ -1,0 +1,9 @@
+apiVersion: apps.armor.io/v1
+kind: ArmorProxy
+metadata:
+  labels:
+    app.kubernetes.io/name: armor-operator
+    app.kubernetes.io/managed-by: kustomize
+  name: armorproxy-sample
+spec:
+  # TODO(user): Add fields here

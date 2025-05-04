@@ -71,9 +71,10 @@ func (a *Application) registerHandlers() {
 // Register Middlewares
 func (a *Application) registerMiddlewares() {
 	// Register logger middleware
+	middlewares.InitElasticsearch()
 	a.handlers = middlewares.LoggerMiddleware(a.handlers)
 
-	a.handlers = middlewares.CSPMiddleware(a.handlers, a.config)
+	// a.handlers = middlewares.CSPMiddleware(a.handlers, a.config)
 
 	// Register coraza middleware
 	a.handlers = middlewares.CorazaMiddleware(a.handlers, a.config)

@@ -7,17 +7,17 @@
     "enableCrs": true
   },
   "proxy": {
-    "targetHost": "reflector",
+    "targetHost": "127.0.0.1",
     "targetPort": 8080
   },
   "sam": {
     "database": "telegraf",
     "measurement": "armor"
   },
-  "csp": {
-    "policy": "default-src 'self';"
-  },
   "oidc": {
-    "enable": false
+    "enable": false,
+    "clientID": "armor-proxy",
+    "providerUrl": "http://localhost:3003/realms/Armor",
+    "redirectApplication": "http://localhost:3000"
   }
 }

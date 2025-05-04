@@ -1,0 +1,32 @@
+apiVersion: v1
+clusters:
+- cluster:
+    certificate-authority: /Users/parth/.minikube/ca.crt
+    extensions:
+    - extension:
+        last-update: Sun, 13 Apr 2025 18:28:10 IST
+        provider: minikube.sigs.k8s.io
+        version: v1.29.0
+      name: cluster_info
+    server: https://127.0.0.1:37045
+  name: minikube
+contexts:
+- context:
+    cluster: minikube
+    extensions:
+    - extension:
+        last-update: Sun, 13 Apr 2025 18:28:10 IST
+        provider: minikube.sigs.k8s.io
+        version: v1.29.0
+      name: context_info
+    namespace: default
+    user: minikube
+  name: minikube
+current-context: minikube
+kind: Config
+preferences: {}
+users:
+- name: minikube
+  user:
+    client-certificate: /Users/parth/.minikube/profiles/minikube/client.crt
+    client-key: /Users/parth/.minikube/profiles/minikube/client.key

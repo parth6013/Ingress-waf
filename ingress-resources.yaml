@@ -1,0 +1,37 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: armor-ingress
+  namespace: armor-reflector
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: "armor.local"
+    http:
+      paths:
+      - path: /
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: armor
+            port:
+              number: 3000
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: reflector-ingress
+  namespace: armor-reflector
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: "reflector.local"
+    http:
+      paths:
+      - path: /
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: reflector
+            port:
+              number: 8080

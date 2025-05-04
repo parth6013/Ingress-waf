@@ -38,7 +38,7 @@ func LoadConfigs() (*models.Config, error) {
 			Measurement: "armor",
 		},
 		Csp: models.Csp{ // Add default CSP values
-			Policy: "default-src 'self'; script-src 'self';",
+			Policy: "",
 		},
 		OIDC: models.OIDC{
 			Enable: false,

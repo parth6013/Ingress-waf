@@ -1,0 +1,14 @@
+apiVersion: apps.armor.io/v1
+kind: ArmorProxy
+metadata:
+  name: armorproxy-sample
+  namespace: armor
+  labels:
+    app.kubernetes.io/name: armor-operator
+    app.kubernetes.io/managed-by: kustomize
+spec:
+  serviceName: reflector
+  serviceNamespace: armor-reflector
+  ingressHost: armor.local
+  oidc: false
+  waf: false

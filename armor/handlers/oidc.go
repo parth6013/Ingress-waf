@@ -6,19 +6,19 @@ import (
 	"context"
 	"log"
 	"net/http"
-	"os"
-	"strings"
 
 	"github.com/coreos/go-oidc/v3/oidc"
 	"golang.org/x/oauth2"
 )
 
 const (
-	CallbackHandlerUrl = "GET /auth/oidc/callback"
+	CallbackHandlerUrl = "/auth/oidc/callback"
 )
 
 var (
-	clientSecret = os.Getenv("DUO_OAUTH2_CLIENT_SECRET")
+	// clientSecret = os.Getenv("DUO_OAUTH2_CLIENT_SECRET")
+	clientSecret = "PU9ug0fnSl3fTUdPWFlPWEq7sXigTgqp"
+	test_url     = "http://localhost:3000/auth/oidc/callback"
 )
 
 type OIDCHandler struct {
@@ -41,8 +41,9 @@ func NewOIDCHandler(config *models.Config) *OIDCHandler {
 		ClientID:     config.OIDC.ClientID,
 		ClientSecret: clientSecret,
 		Endpoint:     provider.Endpoint(),
-		RedirectURL:  strings.TrimSuffix(config.OIDC.RedirectApplication, "/") + strings.TrimPrefix(CallbackHandlerUrl, "GET "),
-		Scopes:       []string{oidc.ScopeOpenID, "profile", "email"},
+		// RedirectURL:  strings.TrimSuffix(config.OIDC.RedirectApplication, "/") + strings.TrimPrefix(CallbackHandlerUrl, "GET "),
+		RedirectURL: test_url,
+		Scopes:      []string{oidc.ScopeOpenID, "profile", "email"},
 	}
 
 	// Create OIDC config
