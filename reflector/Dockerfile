@@ -1,4 +1,4 @@
-FROM containers.cisco.com/ngcs/hcps-python:develop
+FROM python:3.11-alpine
 
 WORKDIR /app
 

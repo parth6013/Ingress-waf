@@ -1,0 +1,95 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: armor-config
+  namespace: armor-reflector
+data:
+  config.json: |
+    {
+      "server": {
+        "host": "0.0.0.0",
+        "port": 3000
+      },
+      "waf": {
+        "enableCrs": true,
+        "customRulesPath": ""
+      },
+      "proxy": {
+        "targetHost": "reflector",
+        "targetPort": 8080
+      },
+      "sam": {
+        "database": "telegraf",
+        "measurement": "armor"
+      },
+      "csp": {
+        "policy": ""
+      },
+      "oidc": {
+        "enable": false
+      }
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: armor
+  namespace: armor-reflector
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: armor
+  template:
+    metadata:
+      labels:
+        app: armor
+    spec:
+      containers:
+        - name: armor
+          image: docker.io/parth6013/armor-project:1.0.0
+          ports:
+            - containerPort: 3000
+          command: ["armor"] 
+          volumeMounts:
+            - name: config-volume
+              mountPath: /app/config.json
+              subPath: config.json
+      volumes:
+        - name: config-volume
+          configMap:
+            name: armor-config
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: armor
+  namespace: armor-reflector
+spec:
+  selector:
+    app: armor
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000
+  type: ClusterIP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: armor-ingress
+  namespace: armor-reflector
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: "armor.local"
+    http:
+      paths:
+      - path: /
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: armor
+            port:
+              number: 3000

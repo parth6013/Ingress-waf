@@ -1,0 +1,37 @@
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: reflector
+  namespace: armor
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: reflector
+  template:
+    metadata:
+      labels:
+        app: reflector
+    spec:
+      containers:
+        - name: reflector
+          image: docker.io/parth6013/reflector-project:1.0.0
+          ports:
+            - containerPort: 8080
+          command: ["python3", "/app/app.py"] 
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: reflector
+  namespace: armor
+spec:
+  selector:
+    app: reflector
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+  type: ClusterIP 

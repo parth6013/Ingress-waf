@@ -1,13 +1,12 @@
 package middlewares
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"strings"
+	"time"
 
 	"armor/models"
-	"armor/utils"
 
 	"github.com/corazawaf/coraza/v3"
 	txhttp "github.com/corazawaf/coraza/v3/http"
@@ -15,57 +14,59 @@ import (
 )
 
 var (
-	session           = utils.NewSession()
 	applicationConfig *models.Config
 )
 
+// LogEntry represents the structure for Elasticsearch logging
+
 func logError(error types.MatchedRule) {
+	severity := strings.ToUpper(error.Rule().Severity().String())
+
 	log.Printf(
 		"%s: %s",
-		strings.ToUpper(error.Rule().Severity().String()),
+		severity,
 		error.ErrorLog(),
 	)
 
-	database, measurementName := applicationConfig.Sam.Database, applicationConfig.Sam.Measurement
-	severity, message, data, uri := strings.ToUpper(error.Rule().Severity().String()), error.Message(), error.Data(), error.URI()
+	message, _, _ := error.Message(), error.Data(), error.URI()
 
-	body := []byte(fmt.Sprintf(`%s,severity=%s,influxdb_database=%s message="%s",data="%s",uri="%s"`, measurementName, severity, database, message, data, uri))
+	// Create log entry for Elasticsearch
+	logEntry := LogEntryCoraza{
+		Timestamp: time.Now().UTC().Format(time.RFC3339),
+		Severity:  severity,
+		Message:   message,
+	}
 
-	go sendLogs(session, body, nil, nil)
+	// Send to Elasticsearch asynchronously
+	go SendToElasticSearchCoraza(logEntry)
 }
 
 func CorazaMiddleware(next http.Handler, config *models.Config) http.Handler {
 	log.Printf("INFO: registering CorazaMiddleware with config: %+v", config.Waf)
 
-	session.DissableSSL()
 	applicationConfig = config
+
+	crsPath := config.Waf.CrsRulesPath
+	if crsPath == "" {
+		crsPath = "./crs4" // Default fallback
+	}
 
 	wafConfig := coraza.NewWAFConfig().
 		WithErrorCallback(logError).
-		WithDirectivesFromFile("/etc/crs4/coraza.conf")
+		WithDirectivesFromFile(crsPath + "/coraza.conf")
 
 	if config.Waf.EnableCrs {
 		wafConfig = wafConfig.
-			WithDirectivesFromFile("/etc/crs4/crs-setup.conf").
-			WithDirectivesFromFile("/etc/crs4/rules/*.conf")
+			WithDirectivesFromFile(crsPath + "/crs-setup.conf").
+			WithDirectivesFromFile(crsPath + "/rules/*.conf")
 	}
 
 	// TODO: Load additional rules from application configs
 
 	waf, err := coraza.NewWAF(wafConfig)
 	if err != nil {
-		log.Fatalf("ERROR: Failed to seetup CorazaMiddleware. %s", err)
+		log.Fatalf("ERROR: Failed to setup CorazaMiddleware. %s", err)
 	}
 
 	return txhttp.WrapHandler(waf, next)
-}
-
-func sendLogs(session *utils.Session, body []byte, headers map[string]string, query map[string]string) {
-	resp, err := session.Post("https://samv2-svl-fab7-svc-telegraf-regional.cisco.com/write", &body, &headers, &query)
-	if err != nil {
-		log.Fatalf("Error in sending error log to SAM: %v", err)
-		return
-	}
-
-	defer resp.Body.Close()
 }

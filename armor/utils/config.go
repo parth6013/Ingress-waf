@@ -28,6 +28,7 @@ func LoadConfigs() (*models.Config, error) {
 		Waf: models.Waf{
 			EnableCrs:       true,
 			CustomRulesPath: "",
+			CrsRulesPath:    "./crs4",
 		},
 		Proxy: models.Proxy{
 			TargetHost: "reflector",
@@ -38,10 +39,14 @@ func LoadConfigs() (*models.Config, error) {
 			Measurement: "armor",
 		},
 		Csp: models.Csp{ // Add default CSP values
-			Policy: "default-src 'self'; script-src 'self';",
+			Policy: "",
 		},
 		OIDC: models.OIDC{
 			Enable: false,
+		},
+		Elasticsearch: models.Elasticsearch{
+			Enable: false,
+			URL:    []string{"http://localhost:9200"},
 		},
 	}
 

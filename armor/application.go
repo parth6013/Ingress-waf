@@ -70,10 +70,16 @@ func (a *Application) registerHandlers() {
 
 // Register Middlewares
 func (a *Application) registerMiddlewares() {
+	// Initialize Elasticsearch if enabled
+	if a.config.Elasticsearch.Enable {
+		log.Println("INFO: Elasticsearch enabled, initializing client")
+		middlewares.InitElasticsearch(a.config.Elasticsearch.URL)
+	} else {
+		log.Println("INFO: Elasticsearch disabled, logs will be printed to console only")
+	}
+
 	// Register logger middleware
 	a.handlers = middlewares.LoggerMiddleware(a.handlers)
-
-	a.handlers = middlewares.CSPMiddleware(a.handlers, a.config)
 
 	// Register coraza middleware
 	a.handlers = middlewares.CorazaMiddleware(a.handlers, a.config)

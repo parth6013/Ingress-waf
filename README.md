@@ -1,90 +1,243 @@
-## Armor - WAF Controller
+# Armor Operator
 
-Many teams within ICS develop and maintain applications that serve a web UI. While web UIs offer convenience and accessibility,
-they also introduce a range of security vulnerabilities that can be exploited by malicious actors. These vulnerabilities stem
-from both the complexity of web technologies and the diverse range of potential attack vectors. Attacks like SQL Injection,
-Cross-Site Scripting (XSS) and Cross-Site Request Forgery (CSRF) to name a few.
+A Kubernetes operator that automatically adds enterprise-grade security to your applications without code changes.
 
-Protecting applications against such vulnerabilities requires constant thought and effort from the development teams.
-Teams rely on security tools to help identify new attack vectors and then mitigate issues in a "reactive" mechanism.
-Although this is good, we need solutions that help us stay secure in a "proactive" mechanism. The proposed solution to
-help with this problem is to utilise technologies like Web Application Firewalls (WAF) and design a way to easily integrate
-it across teams in ICS.
+## Why Armor Operator?
 
----
+Startups and teams testing market fit need to move fast, but security can't be an afterthought. Armor Operator bridges this gap by automatically adding production-ready security layers to any Kubernetes service with a single custom resource.
 
-## Running The Project
-You must have docker compose setup on your maching (Either through podman or via rancher desktop). Run the following docker compose command to build and start the services.
+**The Problem:**
+- Setting up WAF, authentication, and logging takes days or weeks
+- Security expertise is expensive and hard to find
+- Early-stage teams need to focus on product, not infrastructure
+- Manual security configurations are error-prone and hard to maintain
+
+**The Solution:**
+Armor Operator turns security into a one-liner. Point it at your service, and it automatically deploys:
+
+## Features
+
+### 🛡️ Web Application Firewall (WAF)
+- **Coraza WAF** with **OWASP Core Rule Set (CRS) 4.0**
+- Protects against: SQL injection, XSS, RCE, LFI, RFI, session fixation, and 100+ attack patterns
+- Zero application code changes required
+- Configurable rule paths for different environments
+
+### 🔐 Authentication & Authorization
+- **OpenID Connect (OIDC)** integration
+- Works with Keycloak, Auth0, Okta, and any OIDC provider
+- Automatic session management
+- Configurable redirect URLs and client credentials
+
+### 📊 Centralized Logging
+- **Elasticsearch** integration for all security events
+- Real-time attack visibility and analytics
+- Request/response logging for compliance
+- Optional - enable/disable as needed
+
+### 🚀 Zero-Configuration Deployment
+- Declarative Kubernetes CRDs
+- Automatic ConfigMap, Deployment, Service, and Ingress creation
+- Managed by the operator - updates propagate automatically
+- Works with any Kubernetes service
+
+## Quick Example
+
+```yaml
+apiVersion: apps.armor.io/v1
+kind: ArmorProxy
+metadata:
+  name: armorproxy-reflector
+  namespace: default
+  labels:
+    app.kubernetes.io/name: armor-operator
+    app.kubernetes.io/managed-by: kustomize
+spec:
+  # Name of the service to protect (the backend application)
+  serviceName: reflector
+  
+  # Namespace where the backend service exists
+  serviceNamespace: armor-reflector
+  
+  # Optional: Hostname for Ingress (leave empty if not using Ingress)
+  ingressHost: armor.local
+  
+  # Optional: Ingress class name (e.g., nginx, traefik)
+  ingressClassName: nginx
+  
+  # Enable WAF protection with Coraza + OWASP CRS
+  waf: true
+  
+  # Enable OIDC authentication
+  oidc: true
+  
+  # OIDC Configuration (required when oidc: true)
+  oidcConfig:
+    clientID: armor-proxy
+    providerUrl: http://keycloak.armor-reflector.svc.cluster.local:8080/realms/Armor
+    redirectApplication: http://armor-reflector.armor-reflector.svc.cluster.local:3000
+  
+  # Path to CRS rules inside the Armor container
+  # Default: /crs4 (for containers)
+  # Use ./crs4 for local development
+  crsRulesPath: /crs4
+  
+  # Elasticsearch configuration for centralized logging
+  elasticsearch:
+    # Enable/disable Elasticsearch logging
+    enable: true
+    
+    # Elasticsearch endpoint(s)
+    url:
+      - http://elasticsearch.armor-reflector.svc.cluster.local:9200
+```
+
+That's it. Your application is now protected by enterprise-grade security.
+
+## Who Is This For?
+
+- **Startups** testing product-market fit who need security without the overhead
+- **Development teams** deploying internal tools that need basic auth and logging
+- **Platform engineers** building secure-by-default infrastructure
+- **Anyone** who wants WAF + Auth + Logging without manually configuring nginx, OAuth flows, and log shippers
+
+## Quick Setup 
+### Step 1: Install the Operator
 
 ```bash
-docker-compose up --build
+# Clone the repository
+git clone https://github.com/parth6013/Ingress-waf.git
+cd Ingress-waf/armor-operator
+
+# Install CRDs and deploy the operator
+make manifests generate
+make install
+make deploy IMG=docker.io/parth6013/armor-operator:latest
 ```
 
-This will start the WAF on http://localhost:3000, which will be proxying an test http server running on http://localhost:8080.
-You can test the WAF by sending requests to http://localhost:3000.
-
----
-
-## Running The Reflector Application Locally (Without Docker)
-You will need python version 3.10 or above to run the reflector python application locally.
-
-Setup the local environment by running the following commands:
+**Or run locally for development:**
 ```bash
-cd reflector
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
+make manifests generate
+make run
 ```
 
-Now you can run the reflector application by running the following command:
-```bash
-python3 app.py
-```
-
----
-
-## Running Armor WAF Locally (Without Docker)
-You will need go version 1.22.0 or above to run the Armor WAF locally.
-
-Update the configuration file to point to the reflector application running locally. The configuration file is located at `armor/config.json`.
-The following is an example cofniguration that points to the reflector application running locally on port 8080 and configures armor to run on port 3000 with enable CRS set to true.
-
-```json
-{
-  "server": {
-    "host": "0.0.0.0",
-    "port": 3000
-  },
-  "waf": {
-    "enableCrs": true
-  },
-  "proxy": {
-    "targetHost": "localhost",
-    "targetPort": 8080
-  },
-  "sam": {
-    "database": "telegraf",
-    "measurement": "armor"
-  },
-  "oidc": {
-    "enable": false,
-  }
-}
-```
-
-You will also have to download the core ruleset from here: https://github.com/coreruleset/coreruleset/archive/refs/tags/v4.7.0.tar.gz and save the rules filder in `/etc/crs4/`.
-You will also have to copy the contents of `armor/coraza` into `/etc/crs4/`
-
-Now run the following command, which will build and run the application in one go which is useful during development.
+### Step 2: Create an ArmorProxy Resource
 
 ```bash
-cd armor
-go run main.go
+# Create a file: my-armor.yaml
+cat <<EOF | kubectl apply -f -
+apiVersion: apps.armor.io/v1
+kind: ArmorProxy
+metadata:
+  name: my-secure-app
+  namespace: default
+spec:
+  serviceName: my-app-service
+  serviceNamespace: default
+  waf: true
+  oidc: false
+  crsRulesPath: /crs4
+  elasticsearch:
+    enable: false
+EOF
+```
+
+### Step 3: Verify
+
+```bash
+# Check the ArmorProxy resource
+kubectl get armorproxy -n default
+
+# Check created resources
+kubectl get all,configmap -n armor -l app.kubernetes.io/managed-by=armor-operator
+```
+
+The operator automatically creates:
+- ✅ ConfigMap with complete Armor configuration
+- ✅ Deployment running the Armor WAF proxy
+- ✅ Service exposing the protected application
+- ✅ Ingress (if `ingressHost` is specified)
+
+**Access your protected application:**
+```bash
+# If using Ingress
+curl http://armor.local
+
+# Or port-forward
+kubectl port-forward -n armor svc/armor-<serviceName> 3000:3000
+curl http://localhost:3000
 ```
 
 ---
 
-## TODO
-https://ics-etherpad.cisco.com/p/hackathon-waf
+## Real-World Examples
+
+### Example 1: OIDC Authentication Protection
+
+**Without Armor:**
+Your company website is publicly accessible without authentication.
+
+![Direct access without authentication](docs/images/no-auth.png)
+
+**With Armor:**
+Users are automatically redirected to your OIDC provider for authentication before accessing the application.
+
+![OIDC login enforced](docs/images/oidc-login.png)
 
 ---
+
+### Example 2: Attack Protection
+
+#### Shell Injection Attack
+
+**Without Armor:**
+The application is vulnerable to shell injection attacks, exposing sensitive system paths.
+
+![Shell injection attempt](docs/images/shell-injection-attempt.png)
+
+![System path exposed](docs/images/shell-injection-exposed.png)
+
+**With Armor:**
+The WAF detects and blocks the shell injection attack immediately.
+
+![Attack blocked by Armor](docs/images/shell-injection-blocked.png)
+
+![Attack detection confirmation](docs/images/shell-injection-confirmation.png)
+
+---
+
+#### SQL Injection Attack
+
+**Without Armor:**
+The application is vulnerable to SQL injection attacks.
+
+![SQL injection attempt](docs/images/sql-injection-attempt.png)
+
+![SQL injection success](docs/images/sql-injection-success.png)
+
+**With Armor:**
+All SQL injection attempts are blocked by the Coraza WAF with OWASP CRS rules.
+
+---
+
+### Example 3: Centralized Logging & Analytics
+
+**Elasticsearch Integration:**
+All security events are automatically logged to Elasticsearch for analysis.
+
+![Security logs in Elasticsearch](docs/images/elasticsearch-logs.png)
+
+**Kibana Analytics:**
+Visualize attack patterns, identify vulnerabilities, and monitor your security posture in real-time.
+
+![Kibana dashboard showing attack analytics](docs/images/kibana-dashboard.png)
+
+With Armor's centralized logging, you can:
+- Track all blocked attacks
+- Identify attack patterns and trends
+- Generate compliance reports
+- Improve your security posture based on real data
+
+---
+
+*Built with [Kubebuilder](https://kubebuilder.io/) and powered by [Coraza WAF](https://coraza.io/)*

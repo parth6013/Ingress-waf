@@ -1,0 +1,23 @@
+apiVersion: apps.armor.io/v1
+kind: ArmorProxy
+metadata:
+  labels:
+    app.kubernetes.io/name: armor-operator
+    app.kubernetes.io/managed-by: kustomize
+  name: armorproxy-sample
+spec:
+  serviceName: my-service
+  serviceNamespace: default
+  ingressHost: myapp.example.com
+  ingressClassName: nginx
+  waf: true
+  oidc: true
+  oidcConfig:
+    clientID: armor-proxy
+    providerUrl: http://keycloak.default.svc.cluster.local:8080/realms/Armor
+    redirectApplication: http://armor-my-service.default.svc.cluster.local:3000
+  crsRulesPath: /crs4
+  elasticsearch:
+    enable: false
+    url:
+      - http://elasticsearch:9200

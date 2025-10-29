@@ -166,3 +166,33 @@ pyrightconfig.json
 
 # Scratch files
 scratch*
+
+# Personal documentation and notes
+personal-docs/
+
+# Go binaries and build artifacts
+*.exe
+*.exe~
+*.dll
+*.dylib
+armor-operator/bin/
+armor-operator/Dockerfile.cross
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool
+*.out
+
+# Go workspace file
+go.work
+
+# Kubernetes Generated files - skip generated files, except for vendored files
+!vendor/**/zz_generated.*
+
+# editor and IDE paraphernalia
+.idea
+.vscode
+*.swp
+*.swo
+*~

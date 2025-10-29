@@ -5,7 +5,6 @@ import (
 	"armor/utils"
 	"log"
 	"net/http"
-	"os"
 	"strings"
 
 	"github.com/coreos/go-oidc/v3/oidc"
@@ -20,7 +19,8 @@ const (
 )
 
 var (
-	clientSecret = os.Getenv("DUO_OAUTH2_CLIENT_SECRET")
+	// clientSecret = os.Getenv("DUO_OAUTH2_CLIENT_SECRET")
+	clientSecret = "PU9ug0fnSl3fTUdPWFlPWEq7sXigTgqp"
 )
 
 func loginRedirect(w http.ResponseWriter, r *http.Request, oauth2Config *oauth2.Config) {

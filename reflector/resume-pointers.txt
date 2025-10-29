@@ -1,0 +1,59 @@
+email linkedin
+
+quantify
+
+________________
+
+Skills
+Technical Skills
+
+Java, Golang, Swagger, GIT, Docker, Jenkins, CI/CD, Kubernetes/OpenShift , Kafka, ELK, MongoDB
+OOPs, Distributed Systems, Microservices, DSA, System Design
+Soft Skills
+
+
+================================================================================
+TECHNICAL SKILLS
+================================================================================
+
+Languages:           Go, C/C++, Python, JavaScript,Shell Scripting
+Cloud & Container:   Kubernetes, OpenShift, Docker, Anthos (GCP), AWS, Terraform
+DevOps & GitOps:     ArgoCD, Jenkins, CI/CD Pipelines, Argo Workflows, Git
+Observability:       Prometheus, Grafana, FluentBit, ELK Stack, Alertmanager
+Fundamentals:        Distributed Systems, System Design, Data Structures & Algorithms, Networking, Operating System, Linux
+
+
+
+Soft SKills
+
+Leadership, Teamwork, Mentorship, Project Management
+
+
+
+Summary
+Software Engineer II at Cisco, building cloud-native infrastructure platforms that enable 500+ internal teams to deploy applications reliably and efficiently. Specialized in Kubernetes automation, GitOps workflows, and distributed systems using Go and Python. Delivered 80% operational efficiency gains while maintaining 99.95% uptime across mission-critical services processing 1M+ daily API calls.
+
+
+Software Engineer II at Cisco, building cloud-native infrastructure platforms that enable 500+ internal teams to deploy applications reliably and efficiently. Specialized in Kubernetes automation, GitOps workflows, and distributed systems.
+
+Education
+
+Experience
+Software Engineer 2 at  Cisco August 2023 to present
+
+• Spearheaded platform-wide GitOps migration from Jenkins to ArgoCD for 15+ infrastructure add-ons, reducing deployment time by 75% and improving deployment success rate from 85% to 98%
+• Architected repository structure and code patterns for ArgoCD ApplicationSets managing 100+ applications across multi-cluster hub-spoke topology
+• Designed reusable automation framework in Go and Argo Workflows serving as reference architecture for 10+ platform automation projects, reducing development time by 50%
+• Led authentication migration from Ping to Okta across 200+ client clusters, implementing OAuth2 authorization flows with zero downtime
+• Designed and implemented custom Kubernetes operator in Go for NFS auto-mount management, automating netgroup and FIPS configuration across 200+ clusters
+• Architected and deployed end-to-end observability and alerting stack (Prometheus, Grafana, AlertManager, FluentBit) for 100+ OpenShift clusters, reducing incident detection time by 65% and MTTR by 50%
+• Managed Jenkins platform infrastructure serving 4+ teams, executing zero-downtime upgrades across multiple environments, automating vulnerability remediation (reducing patch time by 75%), improving network isolation through subnet migration, and maintaining 100% backup reliability with 24-hour RPO
+• Served as primary on-call engineer for Cluster as a Service supporting 200+ client clusters, maintaining 100% uptime SLA and reducing MTTR by 50%
+
+
+Software Engineer Intern at Cisco Jan 2023 to June 2023
+• Created Go-based metric instrumentation scripts exposing custom cluster and application health metrics to Prometheus, enabling real-time infrastructure monitoring and data-driven capacity planning
+• Optimized E2E test suite in Python Robot Framework for kubernetes cluster health validation reducing test execution time by 30% while improving coverage by 20%
+• Created intelligent node reboot automation pipeline with approval workflows, streamlining OpenStack maintenance operations
+
+

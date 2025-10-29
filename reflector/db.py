@@ -27,6 +27,8 @@ def add_comment(username, salary, grade, DOB, phone_number):
 
 
 def get_comments(search_query):
+
+  
     db = connect_db()
     results = []
     try:
@@ -52,11 +54,12 @@ def get_comments(search_query):
     return results
 
 
-# add_comment("john_doe", "55000", "B", "1990-01-15", "123-456-7890")
-# add_comment("jane_smith", "60000", "A", "1985-06-22", "234-567-8901")
-# add_comment("alex_jones", "52000", "C", "1992-03-11", "345-678-9012")
-# add_comment("sara_brown", "70000", "B+", "1988-09-05", "456-789-0123")
-# add_comment("mike_davis", "48000", "B-", "1995-12-30", "567-890-1234")
 
 
-# print(get_comments("1 OR 1=1"))
+
+  # add_comment("john_doe", "55000", "B", "1990-01-15", "123-456-7890")
+    # add_comment("jane_smith", "60000", "A", "1985-06-22", "234-567-8901")
+    # add_comment("alex_jones", "52000", "C", "1992-03-11", "345-678-9012")
+    # add_comment("sara_brown", "70000", "B+", "1988-09-05", "456-789-0123")
+    # add_comment("mike_davis", "48000", "B-", "1995-12-30", "567-890-1234")
+    # print(get_comments("1 OR 1=1"))

@@ -4,20 +4,25 @@
     "port": 3000
   },
   "waf": {
-    "enableCrs": true
+    "enableCrs": true,
+    "crsRulesPath": "./crs4"
   },
   "proxy": {
-    "targetHost": "reflector",
+    "targetHost": "127.0.0.1",
     "targetPort": 8080
   },
   "sam": {
     "database": "telegraf",
     "measurement": "armor"
   },
-  "csp": {
-    "policy": "default-src 'self';"
-  },
   "oidc": {
-    "enable": false
+    "enable": true,
+    "clientID": "armor-proxy",
+    "providerUrl": "http://localhost:3003/realms/Armor",
+    "redirectApplication": "http://localhost:3000"
+  },
+  "elasticsearch": {
+    "enable": true,
+    "url": ["http://localhost:9200"]
   }
 }
