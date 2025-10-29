@@ -1,71 +1,72 @@
 package middlewares
 
-// import (
-// 	"fmt"
-// 	"log"
-// 	"net/http"
-// 	"strings"
+import (
+	"log"
+	"net/http"
+	"strings"
+	"time"
 
-// 	"armor/models"
-// 	"armor/utils"
+	"armor/models"
 
-// 	"github.com/corazawaf/coraza/v3"
-// 	txhttp "github.com/corazawaf/coraza/v3/http"
-// 	"github.com/corazawaf/coraza/v3/types"
-// )
+	"github.com/corazawaf/coraza/v3"
+	txhttp "github.com/corazawaf/coraza/v3/http"
+	"github.com/corazawaf/coraza/v3/types"
+)
 
-// var (
-// 	session           = utils.NewSession()
-// 	applicationConfig *models.Config
-// )
+var (
+	applicationConfig *models.Config
+)
 
-// func logError(error types.MatchedRule) {
-// 	log.Printf(
-// 		"%s: %s",
-// 		strings.ToUpper(error.Rule().Severity().String()),
-// 		error.ErrorLog(),
-// 	)
+// LogEntry represents the structure for Elasticsearch logging
 
-// 	database, measurementName := applicationConfig.Sam.Database, applicationConfig.Sam.Measurement
-// 	severity, message, data, uri := strings.ToUpper(error.Rule().Severity().String()), error.Message(), error.Data(), error.URI()
+func logError(error types.MatchedRule) {
+	severity := strings.ToUpper(error.Rule().Severity().String())
 
-// 	body := []byte(fmt.Sprintf(`%s,severity=%s,influxdb_database=%s message="%s",data="%s",uri="%s"`, measurementName, severity, database, message, data, uri))
+	log.Printf(
+		"%s: %s",
+		severity,
+		error.ErrorLog(),
+	)
 
-// 	go sendLogs(session, body, nil, nil)
-// }
+	message, _, _ := error.Message(), error.Data(), error.URI()
 
-// func CorazaMiddleware(next http.Handler, config *models.Config) http.Handler {
-// 	log.Printf("INFO: registering CorazaMiddleware with config: %+v", config.Waf)
+	// Create log entry for Elasticsearch
+	logEntry := LogEntryCoraza{
+		Timestamp: time.Now().UTC().Format(time.RFC3339),
+		Severity:  severity,
+		Message:   message,
+	}
 
-// 	session.DissableSSL()
-// 	applicationConfig = config
+	// Send to Elasticsearch asynchronously
+	go SendToElasticSearchCoraza(logEntry)
+}
 
-// 	wafConfig := coraza.NewWAFConfig().
-// 		WithErrorCallback(logError).
-// 		WithDirectivesFromFile("/etc/crs4/coraza.conf")
+func CorazaMiddleware(next http.Handler, config *models.Config) http.Handler {
+	log.Printf("INFO: registering CorazaMiddleware with config: %+v", config.Waf)
 
-// 	if config.Waf.EnableCrs {
-// 		wafConfig = wafConfig.
-// 			WithDirectivesFromFile("/etc/crs4/crs-setup.conf").
-// 			WithDirectivesFromFile("/etc/crs4/rules/*.conf")
-// 	}
+	applicationConfig = config
 
-// 	// TODO: Load additional rules from application configs
+	crsPath := config.Waf.CrsRulesPath
+	if crsPath == "" {
+		crsPath = "./crs4" // Default fallback
+	}
 
-// 	waf, err := coraza.NewWAF(wafConfig)
-// 	if err != nil {
-// 		log.Fatalf("ERROR: Failed to seetup CorazaMiddleware. %s", err)
-// 	}
+	wafConfig := coraza.NewWAFConfig().
+		WithErrorCallback(logError).
+		WithDirectivesFromFile(crsPath + "/coraza.conf")
 
-// 	return txhttp.WrapHandler(waf, next)
-// }
+	if config.Waf.EnableCrs {
+		wafConfig = wafConfig.
+			WithDirectivesFromFile(crsPath + "/crs-setup.conf").
+			WithDirectivesFromFile(crsPath + "/rules/*.conf")
+	}
 
-// func sendLogs(session *utils.Session, body []byte, headers map[string]string, query map[string]string) {
-// 	resp, err := session.Post("https://samv2-svl-fab7-svc-telegraf-regional.cisco.com/write", &body, &headers, &query)
-// 	if err != nil {
-// 		log.Fatalf("Error in sending error log to SAM: %v", err)
-// 		return
-// 	}
+	// TODO: Load additional rules from application configs
 
-// 	defer resp.Body.Close()
-// }
+	waf, err := coraza.NewWAF(wafConfig)
+	if err != nil {
+		log.Fatalf("ERROR: Failed to setup CorazaMiddleware. %s", err)
+	}
+
+	return txhttp.WrapHandler(waf, next)
+}

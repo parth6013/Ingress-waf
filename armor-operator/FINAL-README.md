@@ -177,12 +177,12 @@ curl http://localhost:3000
 **Without Armor:**
 Your company website is publicly accessible without authentication.
 
-![Direct access without authentication](docs/images/no-auth.png)
+![Direct access without authentication](image.png)
 
 **With Armor:**
 Users are automatically redirected to your OIDC provider for authentication before accessing the application.
 
-![OIDC login enforced](docs/images/oidc-login.png)
+![OIDC login enforced](image-1.png)
 
 ---
 
@@ -193,16 +193,16 @@ Users are automatically redirected to your OIDC provider for authentication befo
 **Without Armor:**
 The application is vulnerable to shell injection attacks, exposing sensitive system paths.
 
-![Shell injection attempt](docs/images/shell-injection-attempt.png)
+![Shell injection attempt](image-2.png)
 
-![System path exposed](docs/images/shell-injection-exposed.png)
+![System path exposed](image-4.png)
 
 **With Armor:**
 The WAF detects and blocks the shell injection attack immediately.
 
-![Attack blocked by Armor](docs/images/shell-injection-blocked.png)
+![Attack blocked by Armor](image-3.png)
 
-![Attack detection confirmation](docs/images/shell-injection-confirmation.png)
+![Attack detection confirmation](image-5.png)
 
 ---
 
@@ -211,9 +211,9 @@ The WAF detects and blocks the shell injection attack immediately.
 **Without Armor:**
 The application is vulnerable to SQL injection attacks.
 
-![SQL injection attempt](docs/images/sql-injection-attempt.png)
+![SQL injection attempt](image-6.png)
 
-![SQL injection success](docs/images/sql-injection-success.png)
+![SQL injection success](image-7.png)
 
 **With Armor:**
 All SQL injection attempts are blocked by the Coraza WAF with OWASP CRS rules.
@@ -225,12 +225,12 @@ All SQL injection attempts are blocked by the Coraza WAF with OWASP CRS rules.
 **Elasticsearch Integration:**
 All security events are automatically logged to Elasticsearch for analysis.
 
-![Security logs in Elasticsearch](docs/images/elasticsearch-logs.png)
+![Security logs in Elasticsearch](image-8.png)
 
 **Kibana Analytics:**
 Visualize attack patterns, identify vulnerabilities, and monitor your security posture in real-time.
 
-![Kibana dashboard showing attack analytics](docs/images/kibana-dashboard.png)
+![Kibana dashboard showing attack analytics](image-9.png)
 
 With Armor's centralized logging, you can:
 - Track all blocked attacks

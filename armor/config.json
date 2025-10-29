@@ -4,7 +4,8 @@
     "port": 3000
   },
   "waf": {
-    "enableCrs": true
+    "enableCrs": true,
+    "crsRulesPath": "./crs4"
   },
   "proxy": {
     "targetHost": "127.0.0.1",
@@ -15,9 +16,13 @@
     "measurement": "armor"
   },
   "oidc": {
-    "enable": false,
+    "enable": true,
     "clientID": "armor-proxy",
     "providerUrl": "http://localhost:3003/realms/Armor",
     "redirectApplication": "http://localhost:3000"
+  },
+  "elasticsearch": {
+    "enable": true,
+    "url": ["http://localhost:9200"]
   }
 }

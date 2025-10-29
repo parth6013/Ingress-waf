@@ -34,16 +34,18 @@ func (rw *responseWriter) WriteHeader(code int) {
 
 // ElasticsearchClient initializes the connection.
 var ElasticsearchClient *elasticsearch.Client
+var elasticsearchEnabled bool
 
-func InitElasticsearch() {
+func InitElasticsearch(addresses []string) {
 	cfg := elasticsearch.Config{
-		Addresses: []string{"http://localhost:9200"}, // Elasticsearch URL
+		Addresses: addresses,
 	}
 	client, err := elasticsearch.NewClient(cfg)
 	if err != nil {
 		log.Fatalf("Error creating Elasticsearch client: %s", err)
 	}
 	ElasticsearchClient = client
+	elasticsearchEnabled = true
 	log.Println("✅ Elasticsearch client initialized")
 }
 
@@ -68,6 +70,11 @@ type LogEntryCoraza struct {
 
 // sendToElasticsearch sends logs to Elasticsearch.
 func sendToElasticsearch(logEntry LogEntry) {
+	if !elasticsearchEnabled {
+		log.Printf("INFO: [Logger] %+v", logEntry)
+		return
+	}
+
 	data, err := json.Marshal(logEntry)
 	if err != nil {
 		log.Println("❌ Failed to serialize log entry:", err)
@@ -84,6 +91,11 @@ func sendToElasticsearch(logEntry LogEntry) {
 }
 
 func SendToElasticSearchCoraza(logEntry LogEntryCoraza) {
+	if !elasticsearchEnabled {
+		log.Printf("INFO: [Coraza] %+v", logEntry)
+		return
+	}
+
 	data, err := json.Marshal(logEntry)
 	if err != nil {
 		log.Println("❌ Failed to serialize log entry Coraza:", err)

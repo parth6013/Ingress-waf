@@ -39,6 +39,25 @@ spec:
           spec:
             description: ArmorProxySpec defines the desired state of ArmorProxy
             properties:
+              crsRulesPath:
+                default: /crs4
+                description: CrsRulesPath is the path to CRS rules directory
+                type: string
+              elasticsearch:
+                description: Elasticsearch configuration
+                properties:
+                  enable:
+                    default: false
+                    description: Enable Elasticsearch logging
+                    type: boolean
+                  url:
+                    default:
+                    - http://localhost:9200
+                    description: Elasticsearch URLs
+                    items:
+                      type: string
+                    type: array
+                type: object
               ingressClassName:
                 description: IngressClassName is the optional ingress class name for
                   the ingress resource
@@ -49,6 +68,19 @@ spec:
               oidc:
                 description: If auth to be enabled
                 type: boolean
+              oidcConfig:
+                description: OIDC configuration
+                properties:
+                  clientID:
+                    description: OIDC Client ID
+                    type: string
+                  providerUrl:
+                    description: OIDC Provider URL
+                    type: string
+                  redirectApplication:
+                    description: Redirect Application URL
+                    type: string
+                type: object
               serviceName:
                 description: DeploymentName is the name of the deployment to be protected
                 type: string

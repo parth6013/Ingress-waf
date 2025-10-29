@@ -166,3 +166,6 @@ pyrightconfig.json
 
 # Scratch files
 scratch*
+
+# Personal documentation and notes
+personal-docs/

@@ -47,8 +47,49 @@ type ArmorProxySpec struct {
 	// +optional
 	Oidc bool `json:"oidc,omitempty"`
 
+	// OIDC configuration
+	// +optional
+	OidcConfig OidcSpec `json:"oidcConfig,omitempty"`
+
 	//If WAF to be enabled
 	Waf bool `json:"waf,omitempty"`
+
+	// CrsRulesPath is the path to CRS rules directory
+	// +optional
+	// +kubebuilder:default:="/crs4"
+	CrsRulesPath string `json:"crsRulesPath,omitempty"`
+
+	// Elasticsearch configuration
+	// +optional
+	Elasticsearch ElasticsearchSpec `json:"elasticsearch,omitempty"`
+}
+
+// OidcSpec defines OIDC configuration
+type OidcSpec struct {
+	// OIDC Client ID
+	// +optional
+	ClientID string `json:"clientID,omitempty"`
+
+	// OIDC Provider URL
+	// +optional
+	ProviderUrl string `json:"providerUrl,omitempty"`
+
+	// Redirect Application URL
+	// +optional
+	RedirectApplication string `json:"redirectApplication,omitempty"`
+}
+
+// ElasticsearchSpec defines Elasticsearch configuration
+type ElasticsearchSpec struct {
+	// Enable Elasticsearch logging
+	// +optional
+	// +kubebuilder:default:=false
+	Enable bool `json:"enable,omitempty"`
+
+	// Elasticsearch URLs
+	// +optional
+	// +kubebuilder:default:={"http://localhost:9200"}
+	URL []string `json:"url,omitempty"`
 }
 
 // ArmorProxyStatus defines the observed state of ArmorProxy

@@ -12,13 +12,28 @@ data:
       },
       "waf": {
         "enableCrs": {{ .Waf }},
-        "customRulesPath": ""
+        "customRulesPath": "",
+        "crsRulesPath": "{{ .CrsRulesPath }}"
       },
       "proxy": {
         "targetHost": "{{ .TargetHost }}",
         "targetPort": {{ .TargetPort }}
       },
+      "sam": {
+        "database": "telegraf",
+        "measurement": "armor"
+      },
+      "csp": {
+        "policy": ""
+      },
       "oidc": {
-        "enable": {{ .Oidc }}
+        "enable": {{ .Oidc }},
+        "clientID": "{{ .OidcClientID }}",
+        "providerUrl": "{{ .OidcProviderUrl }}",
+        "redirectApplication": "{{ .OidcRedirectApplication }}"
+      },
+      "elasticsearch": {
+        "enable": {{ .ElasticsearchEnable }},
+        "url": [{{range $index, $url := .ElasticsearchURL}}{{if $index}}, {{end}}"{{$url}}"{{end}}]
       }
     }

@@ -8,6 +8,7 @@ type Server struct {
 type Waf struct {
 	EnableCrs       bool   `json:"enableCrs,omitempty"`
 	CustomRulesPath string `json:"customRulesPath,omitempty"`
+	CrsRulesPath    string `json:"crsRulesPath,omitempty"`
 }
 
 type Proxy struct {
@@ -31,12 +32,18 @@ type OIDC struct {
 	RedirectApplication string `json:"redirectApplication,omitempty"`
 }
 
+type Elasticsearch struct {
+	Enable bool     `json:"enable,omitempty"`
+	URL    []string `json:"url,omitempty"`
+}
+
 // Config holds the entire application configuration
 type Config struct {
-	Server Server `json:"server,omitempty"`
-	Waf    Waf    `json:"waf,omitempty"`
-	Proxy  Proxy  `json:"proxy,omitempty"`
-	Sam    Sam    `json:"sam,omitempty"`
-	Csp    Csp    `json:"csp,omitempty"` // Add the Csp struct here
-	OIDC   OIDC   `json:"oidc,omitempty"`
+	Server        Server        `json:"server,omitempty"`
+	Waf           Waf           `json:"waf,omitempty"`
+	Proxy         Proxy         `json:"proxy,omitempty"`
+	Sam           Sam           `json:"sam,omitempty"`
+	Csp           Csp           `json:"csp,omitempty"` // Add the Csp struct here
+	OIDC          OIDC          `json:"oidc,omitempty"`
+	Elasticsearch Elasticsearch `json:"elasticsearch,omitempty"`
 }

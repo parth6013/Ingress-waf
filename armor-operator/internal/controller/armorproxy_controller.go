@@ -129,12 +129,46 @@ func (r *ArmorProxyReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 
 	// Render and Create/Update ConfigMap
 	configMap := &corev1.ConfigMap{}
+
+	// Prepare Elasticsearch configuration
+	elasticsearchEnable := armorProxy.Spec.Elasticsearch.Enable
+	elasticsearchURL := armorProxy.Spec.Elasticsearch.URL
+	if len(elasticsearchURL) == 0 {
+		elasticsearchURL = []string{"http://localhost:9200"}
+	}
+
+	// Prepare CRS rules path
+	crsRulesPath := armorProxy.Spec.CrsRulesPath
+	if crsRulesPath == "" {
+		crsRulesPath = "/crs4"
+	}
+
+	// Prepare OIDC configuration
+	oidcClientID := armorProxy.Spec.OidcConfig.ClientID
+	if oidcClientID == "" {
+		oidcClientID = ""
+	}
+	oidcProviderUrl := armorProxy.Spec.OidcConfig.ProviderUrl
+	if oidcProviderUrl == "" {
+		oidcProviderUrl = ""
+	}
+	oidcRedirectApplication := armorProxy.Spec.OidcConfig.RedirectApplication
+	if oidcRedirectApplication == "" {
+		oidcRedirectApplication = ""
+	}
+
 	configMapData := map[string]interface{}{
-		"ServiceName": armorProxy.Spec.ServiceName,
-		"Waf":         armorProxy.Spec.Waf,
-		"Oidc":        armorProxy.Spec.Oidc,
-		"TargetHost":  targetHost,
-		"TargetPort":  targetPort,
+		"ServiceName":             armorProxy.Spec.ServiceName,
+		"Waf":                     armorProxy.Spec.Waf,
+		"Oidc":                    armorProxy.Spec.Oidc,
+		"TargetHost":              targetHost,
+		"TargetPort":              targetPort,
+		"CrsRulesPath":            crsRulesPath,
+		"ElasticsearchEnable":     elasticsearchEnable,
+		"ElasticsearchURL":        elasticsearchURL,
+		"OidcClientID":            oidcClientID,
+		"OidcProviderUrl":         oidcProviderUrl,
+		"OidcRedirectApplication": oidcRedirectApplication,
 	}
 	if err := r.renderK8sResourceTemplate("templates/configmap.yaml", configMapData, configMap); err != nil {
 		log.Error(err, "Failed to render ConfigMap template")

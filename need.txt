@@ -1,4 +1,0 @@
-So why is it needed?
-
-It is an idea which spring up in discussion we should have securities at multiple layer. We thought let's have a controller
-for application which are early in production 
